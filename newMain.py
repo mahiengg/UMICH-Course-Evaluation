@@ -26,7 +26,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-os.environ['OPENAI_API_KEY'] = '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'
+os.environ['OPENAI_API_KEY'] = 'sk-'
 os.environ['HUGGINGFACEHUB_API_TOKEN'] = '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'
 
 
