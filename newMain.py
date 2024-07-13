@@ -26,7 +26,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-os.environ['OPENAI_API_KEY'] = ${secrets.OPENAI_API}.
+os.environ['OPENAI_API_KEY'] = st.secrets.OPENAI.OPENAI_API_KEY
 os.environ['HUGGINGFACEHUB_API_TOKEN'] = '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'
 
 
