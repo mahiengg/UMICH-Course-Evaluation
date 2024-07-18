@@ -107,7 +107,9 @@ def user_input(user_transcript, handbook_text,user_question):
     demoTemplate = """
     You are the academic course evaluator checker. Compare the course code of courses from the given transcript with the provided handbook text, and answer to the user question
     from given {user_question}.Make sure to provide all the details in clear and easy to understand example table format with course name, code, status, credits. 
-    Check grading systems, transfer credits, drops and unofficial drops in the handbook_text to evaluate the degree requirements.
+    Check grading systems, transfer credits, drops and unofficial drops in the handbook_text to evaluate the degree requirements. Any Grade is C 
+    then its not eligible for graduation.
+
  
     Transcript: {transcript}
     Handbook Text: {handbook_text}
@@ -130,19 +132,9 @@ def user_input(user_transcript, handbook_text,user_question):
     prediction_msg: dict = chain.predict(
       **inputs)
     print(prediction_msg)
-    st.write("chat_history", st.session_state['messages'])
         # Add user message to chat history
     st.session_state.messages.append({"role": "assistant", "content": prediction_msg})
-    # for message in st.session_state.messages:
-    #         if message["role"] == "user" and message["content"] != "":
-    #             with st.chat_message(message["role"]):
-    #              st.markdown(message["content"])
-    #         else:
-    #             with st.chat_message(message["role"]):
-    #              st.markdown(message["content"])
-
-
-    #DoubleVerifyResult(prediction_msg, handbook_text, user_transcript)
+  
 
 
 
@@ -448,19 +440,15 @@ def main():
          if course_handbook_pdf_docs and transcript_docs and user_question:
              with st.spinner("Processing..."):
                 compare_course_materials(course_handbook_pdf_docs, transcript_docs, user_question)
-                # raw_text2 = get_pdf_text(pdf_docs2)
-                # text_chunks2 = get_text_chunks(raw_text2)
-                # get_vector_store(text_chunks2)
                 for message in st.session_state.messages:
-                    if message["role"] == "user" and message["content"] != "":
-                        with st.chat_message(message["role"]):
-                            st.markdown(message["content"])
-                    else:
-                        with st.chat_message(message["role"]):
-                            st.markdown(message["content"])
+                    if message["content"].strip():
+                        if message["role"] == "user":
+                            with st.chat_message(message["role"]):
+                                st.markdown(message["content"])
+                        else:
+                            with st.chat_message(message["role"]):
+                                st.markdown(message["content"])
                 st.success("Done")
-    # if user_question:
-    #     user_input(user_question)
 
     st.markdown(
     """
