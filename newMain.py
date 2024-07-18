@@ -107,7 +107,7 @@ def user_input(user_transcript, handbook_text,user_question):
     demoTemplate = """
     You are the academic course evaluator checker. Compare the course code of courses from the given transcript with the provided handbook text, and answer to the user question
     from given {user_question}.Make sure to provide all the details in clear and easy to understand example table format with course name, code, status, credits. 
-
+    Check grading systems, transfer credits, drops and unofficial drops in the handbook_text to evaluate the degree requirements.
  
     Transcript: {transcript}
     Handbook Text: {handbook_text}
