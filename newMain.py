@@ -415,13 +415,13 @@ supervision of a fa culty advisor. Page | 13  GRADI NG SYST EM
  """
     #st.write(handbook_chunks)
      # Create vector stores
-    get_vector_store(handBookSoft)
+    get_vector_store(handbook_chunks)
     transcript_chunks = get_text_chunks(transcript_text)
     #st.write(transcript_chunks)
     
     #transcript_store = get_vector_store(transcript_chunks)
     if transcript_text and user_question:
-        user_input(transcript_text,handBookSoft,user_question)
+        user_input(transcript_text,handbook_chunks,user_question)
     #return remaining_courses
 
 
