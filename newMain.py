@@ -64,35 +64,43 @@ def get_vector_store(text_chunks):
     vector_store.save_local("faiss_index")
 
 
-def DoubleVerifyResult(firstResult,handbook_text,user_transcript):
+def DoubleVerifyResult(firstResult,handbook_text,user_transcript,user_question):
     llm = ChatOpenAI(model='gpt-4o',
              temperature=1,)
     
-    anotherNewTemplate = """From the firstResult, Your job is to recheck and validate once again with handbook_text and transcript using Course code example CIS535.
-    First check how many core courses are required and how many are completed and how many are remaining. Then check how many concentration courses are required and
-    how many are completed and how many are remaining. 
-     
+    anotherNewTemplate = """From the firstResult, Your job is to compare firstResult again with the handbook_text and transcript according to the user questions
     
-    Finally you must give the main one output in table format must with columns for "Course Code," "Course Name," "Concentration Area," and "Status" (Completed/Remaining),suggestion, credits.
-    In Status column for completed status add green tick symbol mark, for remaining courses add red cross symbol mark. 
-    Add suggestion column and give suggestion for which courses i need to take to complete my degree requirements. Add credits column which tells
-    each credits of the couurse and total credits completed currently. 
-    Below the Table give suggestion for two lines only if any.
+    Check firstResult is accurate course details. If No, Modify the firstResult 
+    Check with handbook_text for the particular major and check how many core courses needs to choose at each sections.
+    Check with handbook_text for the particular major and check how many concentration courses needs to choose.
+   1. list out all the remaining core courses needs to be done for that particular major in given transcript
+   2. predict the concentration area using completed concentration courses in the transcript
+   3. list out  all remaining concentration courses needs to be done for that particular concentration for that particular major
+    
+    4.Finally you must give  only  one precise output in one table called "Summary table". It must with columns for "Course Code," "Course Name," "Concentration Area," and "Status" (Completed/Remaining),suggestion, credits.
+    5.In Status column for completed status add green tick symbol mark, for remaining courses add red cross symbol mark. 
+    6.Add suggestion column and give suggestion for which courses i need to take to complete my degree requirements. 
+    7.Add credits column which tells each credits of the course and total credits completed currently. Dont calculate credits for failed courses 
+    8.Below the Table give suggestion for maximum five lines only if any. Just a table and five lines of other required suggestion.
     
     
     Transcript: {transcript}
     Handbook Text: {handbook_text}
     FirstResult:{firstResult}
+    user_question: {user_question}
+    chat_history:{chat_history}
 
     Answer:
     """ 
     
-    prompt = PromptTemplate(template = anotherNewTemplate, input_variables = ["firstResult","handbook_text", "transcript"])
-    chain = LLMChain(llm = llm, prompt=prompt,verbose=True)
+    prompt = PromptTemplate(template = anotherNewTemplate, input_variables = ["firstResult","handbook_text", "transcript","user_question","chat_history"])
+    memory = ConversationBufferMemory(memory_key="chat_history",input_key="firstResult")
+    chain = LLMChain(llm = llm, prompt=prompt,verbose=True,memory=memory)
+    chat_history= st.session_state['messages']
+    finalResult: dict = chain.predict(
+    firstResult = firstResult,handbook_text= handbook_text, transcript=user_transcript,user_question=user_question,chat_history=chat_history)
 
-    finalResult: dict = chain.run(
-    firstResult = firstResult,handbook_text= handbook_text, transcript=user_transcript)
-    st.write("final",finalResult)
+    st.session_state.messages.append({"role": "assistant", "content": finalResult})
 
 
 
@@ -109,6 +117,13 @@ def user_input(user_transcript, handbook_text,user_question):
     from given {user_question}.Make sure to provide all the details in clear and easy to understand example table format with course name, code, status, credits. 
     Check grading systems, transfer credits, drops and unofficial drops in the handbook_text to evaluate the degree requirements. Any Grade is C 
     then its not eligible for graduation.
+
+   1. read the major, course code and course name from the given transcript
+   2. Check with handbook_text for the particular major and check how many core courses needs to choose at each sections. 
+   3. list out all the remaining core courses needs to be done for that particular major in given transcript
+   3. predict the concentration area using completed concentration courses in the transcript
+   4. Check with handbook_text for the particular major and check how many concentration courses needs to choose. 
+   5. list out all remaining concentration courses needs to be done for that particular concentration for that particular major
 
  
     Transcript: {transcript}
@@ -132,8 +147,10 @@ def user_input(user_transcript, handbook_text,user_question):
     prediction_msg: dict = chain.predict(
       **inputs)
     print(prediction_msg)
+    DoubleVerifyResult(prediction_msg, handbook_text,user_transcript, user_question)
         # Add user message to chat history
-    st.session_state.messages.append({"role": "assistant", "content": prediction_msg})
+    #st.session_state.messages.append({"role": "assistant", "content": prediction_msg})
+
   
 
 
