@@ -210,6 +210,9 @@ def main():
     .st-emotion-cache-1gwvy71 h1{
          color:#ffff
     }
+        .st-c0 {
+    min-height: 195px;
+}
     </style>
     """,
     unsafe_allow_html=True
