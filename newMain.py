@@ -169,13 +169,12 @@ def main():
     if 'messages' not in st.session_state:
         st.session_state['messages'] = []
 
-    instruction = """
-    1. Compare the given two pdf files and find the main theme 
-    2. What are the key differences between the two PDF files?
-    3. Compare the themes of the two uploaded documents.
-    4. Identify common topics covered in both PDF documents.
-    5. Summarize the main points of the attached PDF in one table.
-    6. all your response should be in maximum three lines
+     instruction = """
+    1. Compare the given two pdf files and find the main theme
+    2. Examine the layout, headings, subheadings, Subsections of both PDF files. 
+    3. Identify and compare the primary theme presented in the two PDFs.
+    4. Note any differences in numerical data, statistics, charts, or graphs between the two documents
+    5. Summarize the content of the two pdfs.
     """
 
   
