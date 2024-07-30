@@ -169,7 +169,7 @@ def main():
     if 'messages' not in st.session_state:
         st.session_state['messages'] = []
 
-     instruction = """
+    instruction = """
     1. Compare the given two pdf files and find the main theme
     2. Examine the layout, headings, subheadings, Subsections of both PDF files. 
     3. Identify and compare the primary theme presented in the two PDFs.
