@@ -91,6 +91,7 @@ def DoubleVerifyResult(firstResult,handbook_text,user_transcript,user_question,u
       user_instruction=user_instruction)
 
     st.session_state.messages.append({"role": "assistant", "content": finalResult})
+    st.session_state["user_input"] = ""
 
 
 
@@ -103,7 +104,7 @@ def user_input(user_transcript, handbook_text,user_question, user_instruction):
  
     
     demoTemplate = """
-    You are the pdf document reader, Read the handbook_text and  transcript. Analysis and understand  the main theme of the two pdfs. 
+    You are the  PDF comparator, Read the handbook_text and transcript. Analysis and understand  the main theme of the two pdfs. 
     Compare the two given pdf's topics.
     give the result according to the user_question and user_instruction
 
@@ -176,15 +177,20 @@ def main():
     4. Note any differences in numerical data, statistics, charts, or graphs between the two documents
     5. Summarize the content of the two pdfs.
     """
-
   
     user_instruction = st.text_area("Your Instrutions", placeholder= instruction)
     if not user_instruction:
         user_instruction = instruction
-    user_question = st.text_input('Ask your questions', key='user_input')
-    st.session_state.messages.append({"role": "user", "content": user_question})
-    if st.button("Submit & Process it"):
-         if course_handbook_pdf_docs and transcript_docs and user_question and user_instruction:
+    def clear_text():
+        st.session_state.user_question = st.session_state.widget
+        st.session_state.widget = ""
+        gpt_progress(st.session_state.user_question)
+    st.text_input('Ask your questions:', key='widget', on_change=clear_text)
+    user_question = st.session_state.get('user_question', '')
+
+    def gpt_progress(user_question):
+        if course_handbook_pdf_docs and transcript_docs and user_question and user_instruction:
+             st.session_state.messages.append({"role": "user", "content": user_question})
              with st.spinner("Processing..."):
                 compare_course_materials(course_handbook_pdf_docs, transcript_docs, user_question,user_instruction)
                 for message in st.session_state.messages:
@@ -196,7 +202,7 @@ def main():
                             with st.chat_message(message["role"]):
                                 st.markdown(message["content"])
                 st.success("Done")
-         else:
+        else:
              st.error('Check all required fields', icon="🚨")
                 
     st.markdown(
@@ -209,7 +215,8 @@ def main():
     .st-emotion-cache-1gwvy71 h1{
          color:#ffff
     }
-        .st-c0 {
+
+    .st-c0 {
     min-height: 195px;
 }
     </style>
