@@ -215,7 +215,15 @@ def main():
     .st-emotion-cache-1gwvy71 h1{
          color:#ffff
     }
-
+  .st-emotion-cache-pb6fr7{
+    position:fixed;
+    bottom:34px;
+    }
+    
+    .st-c5 {
+    background-color: #00274c !important;
+    color: white !important;
+    }
     .st-c0 {
     min-height: 195px;
 }
